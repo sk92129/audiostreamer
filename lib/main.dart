@@ -74,6 +74,7 @@ class _StreamPlayerScreenState extends State<StreamPlayerScreen> {
             title: 'KVCR 91.9 FM',
             artist: 'NPR News & Music',
             album: 'KVCR Live',
+            isLive: true,
           ),
         ),
       );

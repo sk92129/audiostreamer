@@ -1,3 +1,4 @@
+import AVFoundation
 import Flutter
 import UIKit
 
@@ -7,6 +8,15 @@ import UIKit
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    // Playback category keeps the stream running after the app leaves the
+    // foreground, and remote commands surface play/pause in Control Center
+    // and on the Lock Screen.
+    do {
+      try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+    } catch {
+      NSLog("Failed to set audio session category: \(error)")
+    }
+    application.beginReceivingRemoteControlEvents()
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
