@@ -3,8 +3,18 @@
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.example.audiostreamer.audio',
+    androidNotificationChannelName: 'KVCR playback',
+    androidNotificationChannelDescription:
+        'Shows the live station and playback controls.',
+    androidNotificationOngoing: true,
+    androidNotificationIcon: 'drawable/ic_stat_radio',
+  );
   runApp(const RadioApp());
 }
 
@@ -52,11 +62,20 @@ class _StreamPlayerScreenState extends State<StreamPlayerScreen> {
       final session = await AudioSession.instance;
       await session.configure(const AudioSessionConfiguration.music());
       await _player.setVolume(1.0);
-      await _player.setUrl(
-        _streamUrl,
-        headers: const {
-          'User-Agent': 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
-        },
+      await _player.setAudioSource(
+        AudioSource.uri(
+          Uri.parse(_streamUrl),
+          headers: const {
+            'User-Agent':
+                'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+          },
+          tag: MediaItem(
+            id: _streamUrl,
+            title: 'KVCR 91.9 FM',
+            artist: 'NPR News & Music',
+            album: 'KVCR Live',
+          ),
+        ),
       );
       if (!mounted) return;
       setState(() {
