@@ -1,3 +1,5 @@
+// Kang Engineering Systems LLC, 2026, Copyright protection
+
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
@@ -53,8 +55,7 @@ class _StreamPlayerScreenState extends State<StreamPlayerScreen> {
       await _player.setUrl(
         _streamUrl,
         headers: const {
-          'User-Agent':
-              'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+          'User-Agent': 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
         },
       );
       if (!mounted) return;
