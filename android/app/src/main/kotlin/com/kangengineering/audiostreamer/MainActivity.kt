@@ -1,4 +1,4 @@
-package com.example.audiostreamer
+package com.kangengineering.audiostreamer
 
 import android.Manifest
 import android.content.pm.PackageManager

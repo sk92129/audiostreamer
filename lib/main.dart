@@ -8,7 +8,7 @@ import 'package:just_audio_background/just_audio_background.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.example.audiostreamer.audio',
+    androidNotificationChannelId: 'com.kangengineering.audiostreamer.audio',
     androidNotificationChannelName: 'KVCR playback',
     androidNotificationChannelDescription:
         'Shows the live station and playback controls.',
