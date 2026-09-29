@@ -1,7 +1,10 @@
 // Kang Engineering Systems LLC, 2026, Copyright protection
 
+import 'dart:io';
+
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
@@ -45,6 +48,7 @@ class StreamPlayerScreen extends StatefulWidget {
 class _StreamPlayerScreenState extends State<StreamPlayerScreen> {
   static const String _streamUrl =
       'https://kvcr.streamguys1.com/live?dist=nprweb';
+  static const String _launcherIconAsset = 'assets/images/app_icon.png';
   late final AudioPlayer _player;
   bool _isInit = false;
   String? _error;
@@ -56,6 +60,16 @@ class _StreamPlayerScreenState extends State<StreamPlayerScreen> {
     _initAudio();
   }
 
+  Future<Uri> _launcherIconUri() async {
+    final data = await rootBundle.load(_launcherIconAsset);
+    final file = File('${Directory.systemTemp.path}/kas_launcher_icon.png');
+    await file.writeAsBytes(
+      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+      flush: true,
+    );
+    return file.uri;
+  }
+
   Future<void> _initAudio() async {
     try {
       // Route through the media stream so device volume (including max)
@@ -63,6 +77,7 @@ class _StreamPlayerScreenState extends State<StreamPlayerScreen> {
       final session = await AudioSession.instance;
       await session.configure(const AudioSessionConfiguration.music());
       await _player.setVolume(1.0);
+      final iconArtUri = await _launcherIconUri();
       await _player.setAudioSource(
         AudioSource.uri(
           Uri.parse(_streamUrl),
@@ -74,6 +89,7 @@ class _StreamPlayerScreenState extends State<StreamPlayerScreen> {
             title: 'KVCR 91.9 FM',
             artist: 'NPR News & Music',
             album: 'KVCR Live',
+            artUri: iconArtUri,
             isLive: true,
           ),
         ),
