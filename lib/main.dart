@@ -1,3 +1,4 @@
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -30,9 +31,10 @@ class StreamPlayerScreen extends StatefulWidget {
 
 class _StreamPlayerScreenState extends State<StreamPlayerScreen> {
   static const String _streamUrl =
-      '[https://kvcr.streamguys1.com/live?dist=nprweb](https://kvcr.streamguys1.com/live?dist=nprweb)';
+      'https://kvcr.streamguys1.com/live?dist=nprweb';
   late final AudioPlayer _player;
   bool _isInit = false;
+  String? _error;
 
   @override
   void initState() {
@@ -43,10 +45,30 @@ class _StreamPlayerScreenState extends State<StreamPlayerScreen> {
 
   Future<void> _initAudio() async {
     try {
-      await _player.setUrl(_streamUrl);
-      setState(() => _isInit = true);
+      // Route through the media stream so device volume (including max)
+      // controls the speaker, instead of the quiet call/earpiece path.
+      final session = await AudioSession.instance;
+      await session.configure(const AudioSessionConfiguration.music());
+      await _player.setVolume(1.0);
+      await _player.setUrl(
+        _streamUrl,
+        headers: const {
+          'User-Agent':
+              'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+        },
+      );
+      if (!mounted) return;
+      setState(() {
+        _isInit = true;
+        _error = null;
+      });
     } catch (e) {
       debugPrint('Error loading live stream: $e');
+      if (!mounted) return;
+      setState(() {
+        _isInit = false;
+        _error = 'Could not start the live stream';
+      });
     }
   }
 
@@ -76,6 +98,10 @@ class _StreamPlayerScreenState extends State<StreamPlayerScreen> {
               style: TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 40),
+            if (_error != null) ...[
+              Text(_error!, style: const TextStyle(color: Colors.red)),
+              const SizedBox(height: 16),
+            ],
             StreamBuilder<PlayerState>(
               stream: _player.playerStateStream,
               builder: (context, snapshot) {
@@ -103,7 +129,9 @@ class _StreamPlayerScreenState extends State<StreamPlayerScreen> {
                     } else {
                       // If it disconnected or wasn't set, reload before playing
                       if (!_isInit) {
-                        _initAudio().then((_) => _player.play());
+                        _initAudio().then((_) {
+                          if (_isInit) _player.play();
+                        });
                       } else {
                         _player.play();
                       }
