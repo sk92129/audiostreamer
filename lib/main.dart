@@ -24,7 +24,8 @@ class RadioApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'KVCR Radio Stream',
+      debugShowCheckedModeBanner: false,
+      title: 'KAS',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -66,8 +67,7 @@ class _StreamPlayerScreenState extends State<StreamPlayerScreen> {
         AudioSource.uri(
           Uri.parse(_streamUrl),
           headers: const {
-            'User-Agent':
-                'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
           },
           tag: MediaItem(
             id: _streamUrl,
